@@ -57,4 +57,8 @@ La estructura del proyecto sigue una organización estándar de aplicaciones en 
     ```bash
     python StonksBank/app.py
 
+##Integrantes##
+- Andrea Carolina Romero: https://github.com/caro050
+- Miguel Angel Salas: https://github.com/Emblask
+- Andrés Felipe Gallego: 
 
