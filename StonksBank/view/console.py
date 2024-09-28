@@ -60,7 +60,14 @@ def ejecutar():
                         print("\n--- Cambiar Contraseña ---")
                         contrasena_actual = input("Contraseña actual: ")
                         nueva_contrasena = input("Nueva contraseña: ")
-                        controlador.cambiar_contrasena(nombre_usuario, contrasena_actual, nueva_contrasena)
+                        confirmar_contrasena = input("Confirmar nueva contraseña: ")
+
+                        if nueva_contrasena!= confirmar_contrasena:
+                            print("Las contraseñas no coinciden.")
+                            break
+                        else:
+                            print("Contraseña cambiada correctamente.")
+                            controlador.actualizar_contrasena(nombre_usuario, contrasena_actual, nueva_contrasena)
                     elif opcion_sesion == "2":
                         print("\n--- Salir de Sesión ---")
                         break
