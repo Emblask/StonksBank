@@ -17,24 +17,24 @@ La estructura del proyecto sigue una organización estándar de aplicaciones en 
   - **`services/`**: Contiene la lógica de negocio de la aplicación, como la gestión de usuarios, cuentas, y transacciones. Aquí se implementan los métodos para realizar operaciones como transferencias de dinero, cambios de contraseña, y generación de reportes.
 
   - **`resources/`**:  contiene archivos y recursos necesarios para el funcionamiento de la aplicación, excluyendo el código fuente. como Imagenes, videos, sonidos, etc.
+  
+  - **`view/`**: Contiene el archivo console.py el cual cuenta con la logica para mostrar la aplicación a traves de la terminal
 
 - **`tests/`**: Contiene los archivos de prueba (test) que verifican la funcionalidad de la aplicación. Aquí se incluyen pruebas unitarias y pruebas de integración para asegurarse de que todos los componentes funcionen correctamente.
+
+
 
 ### Archivos
 
 - **`StonksBank/__init__.py`**: Archivo que convierte la carpeta `StonksBank` en un módulo de Python. Permite importar submódulos desde esta carpeta.
 
-- **`StonksBank/app.py`**: Archivo principal de la aplicación. Contiene el código para iniciar la aplicación, definir las rutas y configurar la interacción entre los controladores y la lógica de negocio.
-
-- **`StonksBank/config.py`**: Archivo de configuración de la aplicación. Contiene parámetros de configuración como la base de datos, claves secretas, y otras variables de entorno.
+- **`StonksBank/main.py`**: Archivo que contiene el código para ejecutar la aplicación.
 
 - **`README.md`**: Este archivo. Proporciona una descripción general del proyecto, su estructura y su propósito.
 
 - **`.gitignore`**: Archivo que especifica qué archivos o carpetas deben ser ignorados por Git. Suele incluir archivos de configuración local, bases de datos temporales, y otros archivos que no deberían ser versionados.
 
 - **`requirements.txt`**: Archivo que contiene una lista de dependencias de Python que se deben instalar para que la aplicación funcione correctamente. Se utiliza para instalar las dependencias con pip.
-
-- **`setup.py`**: Archivo que define la configuración para distribuir e instalar el paquete Python. Incluye información sobre el nombre del paquete, versión, autor, y dependencias.
 
 - **`LICENSE.txt`**: contiene la licencia bajo la cual se distribuye este proyecto. La licencia define los términos y condiciones para el uso, modificación y redistribución del código y otros recursos del proyecto. Es importante leer y comprender la licencia para asegurar el cumplimiento de los derechos y responsabilidades legales.
 
@@ -55,6 +55,6 @@ La estructura del proyecto sigue una organización estándar de aplicaciones en 
     pip install -r requirements.txt
 5. **Ejecutar la aplicación**:
     ```bash
-    python StonksBank/app.py
+    python StonksBank/main.py
 
 

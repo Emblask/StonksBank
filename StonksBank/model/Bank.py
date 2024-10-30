@@ -16,15 +16,11 @@ Confirmar contraseña actual confirmar_contraseña(contrasena_actual): Bool Usua
 Actualizar la contraseña en el objeto Usuario. actualizar_contrasena(contrasena_nueva):str Usuario
 Guardar el usuario actualizado en el repositorio. actualizar_usuario(usuario)RepositorioUsuario
 """
-
+import uuid
 import datetime
-
-
-
 
 class Usuario:
     def __init__(self, nombre_usuario:str, contrasena:str, nombre:str, cedula:str, fecha_nacimiento:datetime) -> None:
-        # Inicializar atributos del usuario
         self.nombre_usuario = nombre_usuario
         self.contrasena = contrasena  # En un caso real, esta contraseña debería estar cifrada
         self.nombre = nombre
@@ -32,70 +28,51 @@ class Usuario:
         self.fecha_nacimiento = fecha_nacimiento
 
     def confirmar_contrasena(self, contrasena_actual:str) -> bool:
-        # Verificar si la contraseña ingresada coincide
         return self.contrasena == contrasena_actual
-    
-    
-    def actualizar_contrasena(self, contrasena_nueva:str) -> str:
-        # Actualizar la contraseña del usuario
+
+    def actualizar_contrasena(self, contrasena_nueva:str) -> None:
         self.contrasena = contrasena_nueva
 
 
 class RepositorioUsuario:
     def __init__(self):
-        self.usuarios = {}  # Diccionario para almacenar usuarios con nombre_usuario como clave
-
+        self.usuarios = {}
 
     def obtener_usuario(self, nombre_usuario:str) -> Usuario:
-        # Retornar el usuario si existe en el repositorio
         return self.usuarios.get(nombre_usuario)
-    
 
     def buscar_cedula(self, cedula:str) -> Usuario:
-        # Buscar usuario por cédula
         for usuario in self.usuarios.values():
             if usuario.cedula == cedula:
                 return usuario
         return None
-    
 
     def agregar_usuario(self, usuario:Usuario) -> None:
-        # Agregar el usuario al repositorio
         self.usuarios[usuario.nombre_usuario] = usuario
-
 
     def actualizar_usuario(self, usuario:Usuario) -> None:
-        # Actualizar el usuario en el repositorio
         self.usuarios[usuario.nombre_usuario] = usuario
-        
+
+
 class ControladorUsuario:
     def __init__(self, repositorio: RepositorioUsuario):
         self.repositorio = repositorio
         self._usuario_actual = None
 
-
-    def registrar_usuario(self, nombre_usuario:str, contrasena:str, nombre:str, cedula:str, fecha_nacimiento:datetime) -> None:
-        # Verificar si el nombre de usuario o la cédula ya existen
+    def registrar_usuario(self, nombre_usuario:str, contrasena:str, nombre:str, cedula:str, fecha_nacimiento:datetime) -> bool:
         if self.repositorio.obtener_usuario(nombre_usuario):
             print(f"El nombre de usuario '{nombre_usuario}' ya está registrado.")
             return False
         if self.repositorio.buscar_cedula(cedula):
             print(f"La cédula '{cedula}' ya está registrada.")
             return False
-        # Crear una nueva instancia de Usuario
         nuevo_usuario = Usuario(nombre_usuario, contrasena, nombre, cedula, fecha_nacimiento)
-        
-        # Agregar el usuario al repositorio
         self.repositorio.agregar_usuario(nuevo_usuario)
         print("Usuario registrado con éxito.")
         return True
-    
 
     def iniciar_sesion(self, nombre_usuario:str, contrasena:str) -> bool:
-        # Buscar el usuario en el repositorio
         usuario = self.repositorio.obtener_usuario(nombre_usuario)
-        
-        # Validar usuario y contraseña
         if usuario and usuario.confirmar_contrasena(contrasena):
             self._usuario_actual = usuario
             print(f"Inicio de sesión exitoso. Bienvenido {usuario.nombre}.")
@@ -103,25 +80,73 @@ class ControladorUsuario:
         else:
             print("Nombre de usuario o contraseña incorrectos.")
             return False
-        
 
     def usuario_actual(self) -> Usuario:
-        # Retornar el usuario actual en sesión
         return self._usuario_actual 
-    
 
     def cambiar_contrasena(self, nombre_usuario:str, contrasena_actual:str, nueva_contrasena:str) -> bool:
-        # Buscar y validar el usuario en el repositorio
         usuario = self.repositorio.obtener_usuario(nombre_usuario)
-        
         if usuario and usuario.confirmar_contrasena(contrasena_actual):
-            # Actualizar la contraseña
             usuario.actualizar_contrasena(nueva_contrasena)
-            
-            # Guardar el usuario actualizado en el repositorio
             self.repositorio.actualizar_usuario(usuario)
             print("Contraseña actualizada con éxito.")
             return True
         else:
             print("Contraseña actual incorrecta.")
             return False
+
+
+class Cuenta:
+    def __init__(self, tipo_cuenta:str, saldo:float=0.0):
+        self.id_cuenta = str(uuid.uuid4())  # Genera un ID único para la cuenta
+        self.tipo_cuenta = tipo_cuenta
+        self.saldo = saldo
+        self.historial_transacciones = []
+
+    def deducir_monto(self, monto:float) -> bool:
+        if self.saldo >= monto:
+            self.saldo -= monto
+            self.historial_transacciones.append(["Deducción", monto])
+            return True
+        return False
+
+    def agregar_monto(self, monto:float) -> None:
+        self.saldo += monto
+        self.historial_transacciones.append(["Depósito", monto])
+
+
+class RepositorioCuenta:
+    def __init__(self):
+        self.cuentas = {}
+
+    def obtener_cuenta(self, id_cuenta:str) -> Cuenta:
+        return self.cuentas.get(id_cuenta)
+
+    def agregar_cuenta(self, cuenta:Cuenta) -> None:
+        self.cuentas[cuenta.id_cuenta] = cuenta
+
+
+class ControladorCuenta:
+    def __init__(self, repositorio:RepositorioCuenta):
+        self.repositorio = repositorio
+
+    def crear_cuenta(self, usuario:Usuario, tipo_cuenta:str) -> Cuenta:
+        nueva_cuenta = Cuenta(tipo_cuenta)
+        self.repositorio.agregar_cuenta(nueva_cuenta)
+        print(f"Cuenta de tipo '{tipo_cuenta}' creada con éxito. ID: {nueva_cuenta.id_cuenta}")
+        return nueva_cuenta
+
+    def realizar_transferencia(self, cuenta_origen:Cuenta, cuenta_destino:Cuenta, monto:float) -> bool:
+        if cuenta_origen.deducir_monto(monto):
+            cuenta_destino.agregar_monto(monto)
+            print(f"Transferencia de {monto} realizada con éxito.")
+            return True
+        print("Saldo insuficiente para realizar la transferencia.")
+        return False
+
+    def retirar_dinero(self, cuenta:Cuenta, monto:float) -> bool:
+        if cuenta.deducir_monto(monto):
+            print(f"Retiro de {monto} realizado con éxito.")
+            return True
+        print("Saldo insuficiente para realizar el retiro.")
+        return False
