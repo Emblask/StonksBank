@@ -1,0 +1,42 @@
+{
+    "a": {
+        "contrasena": "987",
+        "nombre": "af",
+        "cedula": "12345",
+        "fecha_nacimiento": "2044-11-04"
+    },
+    "ap": {
+        "contrasena": "456",
+        "nombre": "apo",
+        "cedula": "987",
+        "fecha_nacimiento": "2004-11-04"
+    },
+    "qqq": {
+        "contrasena": "12",
+        "nombre": "qqq",
+        "cedula": "123445",
+        "fecha_nacimiento": "2004-11-02",
+        "saldo": 0
+    },
+    "zn": {
+        "contrasena": "aa",
+        "nombre": "aaa",
+        "cedula": "3243423",
+        "fecha_nacimiento": "2004-11-02",
+        "saldo": 0
+    },
+    "jaime": {
+        "contrasena": "9876",
+        "nombre": "jaime Gallego",
+        "cedula": "12445432",
+        "fecha_nacimiento": "2004-11-04",
+        "saldo": 0
+    },
+    "gabriel": {
+        "contrasena": "tomas",
+        "nombre": "uribe",
+        "cedula": "1238743",
+        "fecha_nacimiento": "2004-11-04",
+        "saldo": 0
+    }
+}
