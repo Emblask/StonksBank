@@ -1,21 +1,3 @@
-"""
-
-Registrar al nuevo usuario en el sistema. registrar_usuario(nombre_usuario, contrasena, nombre, cedula, fecha_nacimiento) ControladorUsuario
-comprobar si usuario o nombre_usuario ya existen obtener_usuario(nombre_usuario):Usuario buscar_cedula(cedula):Usuario RepositorioUsuario
-Crear una nueva instancia de la clase Usuario. __init__(nombre_usuario, contrasena, nombre, cedula, fecha_nacimiento) Usuario
-Agregar el usuario al repositorio de usuarios. agregar_usuario(usuario) RepositorioUsuario
-
-Iniciar el proceso de inicio de sesión para el usuario. iniciar_sesion(nombre_usuario, contrasena) ControladorUsuario
-Buscar y validar el usuario en el repositorio de usuarios. obtener_usuario(nombre_usuario) RepositorioUsuario
-Confirmar contraseña confirmar_contraseña(contrasena_actual): Bool Usuario
-Mantener conexión usuario_actual:Usuario ControladorUsuario
-
-Iniciar el proceso para cambiar la contraseña del usuario. cambiar_contrasena(nombre_usuario, contrasena_actual, nueva_contrasena) ControladorUsuario
-Buscar y validar el usuario en el repositorio de usuarios. obtener_usuario(nombre_usuario) RepositorioUsuario
-Confirmar contraseña actual confirmar_contraseña(contrasena_actual): Bool Usuario
-Actualizar la contraseña en el objeto Usuario. actualizar_contrasena(contrasena_nueva):str Usuario
-Guardar el usuario actualizado en el repositorio. actualizar_usuario(usuario)RepositorioUsuario
-"""
 import uuid
 import datetime
 
@@ -33,7 +15,7 @@ class SaldoInsuficienteError(Exception):
 class Usuario:
     def __init__(self, nombre_usuario: str, contrasena: str, nombre: str, cedula: str, fecha_nacimiento: datetime.date) -> None:
         self.nombre_usuario = nombre_usuario
-        self.contrasena = contrasena  # En un caso real, esta contraseña debería estar cifrada
+        self.contrasena = contrasena  
         self.nombre = nombre
         self.cedula = cedula
         self.fecha_nacimiento = fecha_nacimiento
@@ -87,7 +69,7 @@ class ControladorUsuario:
             print(f"Inicio de sesión exitoso. Bienvenido {usuario.nombre}.")
             return True
         else:
-            raise ValueError("Nombre de usuario o contraseña incorrectos.")  # Usamos una excepción estándar para errores de autenticación
+            raise ValueError("Nombre de usuario o contraseña incorrectos.")
 
     def usuario_actual(self) -> Usuario:
         return self._usuario_actual 
@@ -110,17 +92,19 @@ class Cuenta:
         self.tipo_cuenta = tipo_cuenta
         self.saldo = saldo
         self.historial_transacciones = []
+        self.bloqueada = False
 
     def deducir_monto(self, monto: float) -> bool:
-        if self.saldo >= monto:
+        if self.saldo >= monto and not self.bloqueada:
             self.saldo -= monto
             self.historial_transacciones.append(["Deducción", monto])
             return True
         return False
 
     def agregar_monto(self, monto: float) -> None:
-        self.saldo += monto
-        self.historial_transacciones.append(["Depósito", monto])
+        if not self.bloqueada:
+            self.saldo += monto
+            self.historial_transacciones.append(["Depósito", monto])
 
 # Clase RepositorioCuenta
 class RepositorioCuenta:
@@ -158,3 +142,47 @@ class ControladorCuenta:
             return True
         else:
             raise SaldoInsuficienteError("Saldo insuficiente para realizar el retiro.")
+
+    def mostrar_saldo_e_historial(self, cuenta: Cuenta) -> None:
+        print(f"Saldo actual: {cuenta.saldo}")
+        print("Historial de transacciones:")
+        for transaccion in cuenta.historial_transacciones:
+            print(f"{transaccion[0]} de {transaccion[1]}")
+
+# Clase ControladorReporte
+class ControladorReporte:
+    def __init__(self, cuenta: Cuenta):
+        self.cuenta = cuenta
+
+    def generar_reporte(self) -> dict:
+        return {
+            "id_cuenta": self.cuenta.id_cuenta,
+            "tipo_cuenta": self.cuenta.tipo_cuenta,
+            "saldo": self.cuenta.saldo,
+            "historial_transacciones": self.cuenta.historial_transacciones,
+        }
+
+    def mostrar_reporte_en_pantalla(self) -> None:
+        datos = self.generar_reporte()
+        print(f"Reporte de la cuenta ID: {datos['id_cuenta']}")
+        print(f"Tipo de cuenta: {datos['tipo_cuenta']}")
+        print(f"Saldo: {datos['saldo']}")
+        print("Historial de transacciones:")
+        for transaccion in datos["historial_transacciones"]:
+            print(f"  - {transaccion[0]} de {transaccion[1]}")
+
+    def descargar_reporte(self) -> None:
+        print("Descargando reporte...")
+
+# Clase ControladorAdmin
+class ControladorAdmin:
+    def __init__(self, cuenta_repo: RepositorioCuenta):
+        self.cuenta_repo = cuenta_repo
+
+    def bloquear_cuenta(self, cuenta: Cuenta) -> None:
+        cuenta.bloqueada = True
+        print(f"Cuenta ID: {cuenta.id_cuenta} ha sido bloqueada.")
+
+    def desbloquear_cuenta(self, cuenta: Cuenta) -> None:
+        cuenta.bloqueada = False
+        print(f"Cuenta ID: {cuenta.id_cuenta} ha sido desbloqueada.")
